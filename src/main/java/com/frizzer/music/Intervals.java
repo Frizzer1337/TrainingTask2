@@ -74,7 +74,7 @@ public class Intervals {
     //args[START_NOTE] is string that contains two parts(second is optional) first is note,
     //second is semitone in below code lines we divide our string into this two parts
     String startNoteValue = args[START_NOTE].substring(0, 1);
-    String semitoneValue = findSemitoneValue(args);
+    String semitoneValue = findSemitoneValue(args[START_NOTE]);
 
     int startDegree = Arrays.binarySearch(noteOrder, startNoteValue);
     int startSemitone = semitonesMap.get(semitoneValue);
@@ -121,27 +121,28 @@ public class Intervals {
     }
   }
 
-  public static String findSemitoneValue(String[] args) {
-    final int START_NOTE = 1;
-
+  public static String findSemitoneValue(String semitone) {
     String semitoneValue = "";
-    if (args[START_NOTE].length() > 2) {
-      semitoneValue = args[START_NOTE].substring(1, 3);
-    } else if (args[START_NOTE].length() > 1) {
-      semitoneValue = args[START_NOTE].substring(1, 2);
+    if (semitone.length() > 2) {
+      semitoneValue = semitone.substring(1, 3);
+    } else if (semitone.length() > 1) {
+      semitoneValue = semitone.substring(1, 2);
     }
 
     return semitoneValue;
   }
 
+  //this function counts amount of semitones between start and result degree
   public static int countSemitone(
       int startDegree, int resultDegree, int startSemitone, int semitoneToMove) {
     int semitoneAmount = 0;
     int fullCircle = 7;
     List<Integer> gapWithOneSemitone = List.of(1, 4, 9, 11);
+
     if (startDegree >= resultDegree) {
       resultDegree += fullCircle;
     }
+
     for (int i = startDegree; i < resultDegree; i++) {
       if (gapWithOneSemitone.contains(i)) {
         semitoneAmount++;
@@ -149,12 +150,54 @@ public class Intervals {
         semitoneAmount += 2;
       }
     }
+
     return semitoneAmount - semitoneToMove + startSemitone;
   }
 
 
   public static String intervalIdentification(String[] args) {
-    return null;
+
+    final int START_NOTE = 0;
+    final int END_NOTE = 1;
+    final int NOTE_ORDER = 2;
+    final int FULL_CIRCLE = 7;
+
+    preconditions(args);
+
+    //args[START_NOTE] and args[END_NOTE] are strings that contains two parts(second is optional) first is note,
+    //second is semitone in below code lines we divide our string into this two parts
+    String startNoteValue = args[START_NOTE].substring(0, 1);
+    String startSemitoneValue = findSemitoneValue(args[START_NOTE]);
+
+    int startDegree = Arrays.binarySearch(noteOrder, startNoteValue);
+    int startSemitone = semitonesMap.get(startSemitoneValue);
+
+    String endNoteValue = args[END_NOTE].substring(0, 1);
+    String endSemitoneValue = findSemitoneValue(args[END_NOTE]);
+
+    int endDegree = Arrays.binarySearch(noteOrder, endNoteValue);
+    int endSemitone = semitonesMap.get(endSemitoneValue);
+
+    //With knowledge about start and end both of degree and semitone we can calculate how many
+    //degrees and semitones are between them
+    int degreeToMove = endDegree - startDegree + 1;
+    int semitoneToMove = countSemitone(startDegree,endDegree,startSemitone,endSemitone);
+
+    //With knowledge about amount of degrees and semitones between start and end
+    //we can find the interval
+    Map<String,Integer> resultMap = Map.of(SEMITONE,semitoneToMove,DEGREE,degreeToMove);
+    String resultInterval = interval.entrySet()
+        .stream()
+        .filter(entry -> entry.getValue().equals(resultMap))
+        .map(Entry::getKey).collect(Collectors.joining());
+
+
+    System.out.println(startDegree + " " + startSemitone);
+    System.out.println(endDegree + " " + endSemitone);
+    System.out.println(degreeToMove + " " + semitoneToMove);
+    System.out.println(resultInterval);
+
+    return resultInterval;
   }
 
   private Intervals() {
