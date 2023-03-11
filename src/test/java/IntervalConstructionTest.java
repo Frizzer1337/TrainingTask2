@@ -5,7 +5,7 @@ import com.frizzer.music.Intervals;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class IntervalsTest {
+class IntervalConstructionTest {
 
   @Test
   void testIntervalConstructionByNull() {
