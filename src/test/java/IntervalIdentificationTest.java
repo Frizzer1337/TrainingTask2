@@ -19,6 +19,12 @@ class IntervalIdentificationTest {
   }
 
   @Test
+  void testIntervalIdentificationWithNonExistingInterval(){
+    String[] args = {"A","Ab"};
+    assertThrows(RuntimeException.class, () -> Intervals.intervalIdentification(args));
+  }
+
+  @Test
   void testIntervalIdentificationWithTwoElements() {
     List<String[]> list = List.of(new String[]{"C", "D"}, new String[]{"B", "F#"},
         new String[]{"Fb", "Gbb"}, new String[]{"G", "F#"});

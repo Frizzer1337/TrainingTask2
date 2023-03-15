@@ -155,6 +155,9 @@ public class Intervals {
         .stream()
         .filter(entry -> entry.getValue().equals(resultMap))
         .map(Entry::getKey).collect(Collectors.joining());
+    if(resultInterval.isEmpty()){
+      throw new RuntimeException("Cannot find the interval");
+    }
 
     return resultInterval;
   }
